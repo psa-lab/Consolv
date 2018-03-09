@@ -1,0 +1,102 @@
+#!/bin/sh -f
+#
+# consolv2pdb - take a Consolv output file and convert it into two
+#               PDB files:  one containing the waters predicted to
+#               be conserved, and the other containing the waters
+#               predicted to be displaced.
+#
+# Usage:  consolv2pdb <code>
+#         Where <code>.pred (bbknn output, with or without -v flag),
+#         <code>.env (from Consolv in application mode),
+#         and pdb<code>.ent (pdb file) are in the current directory.
+if [ $# -ne 1 ] ; then
+  echo ""
+  echo "Usage: $0 <code>"
+  echo "   Where <code>.pred, <code>.env, and pdb<code>.ent are located"
+  echo "   in the current directory."
+  echo ""
+  exit
+fi
+
+# Set up input and output filenames
+pdb=$1
+consfile=${pdb}.pred
+envfile=${pdb}.env
+pdbfile=pdb${pdb}.ent
+
+# Make sure all appropriate files exist
+if [ ! -f $consfile ] ; then
+  echo ""
+  echo "$consfile not found."
+  echo ""
+  exit
+fi
+if [ ! -f $envfile ] ; then
+  echo ""
+  echo "$envfile not found."
+  echo ""
+  exit
+fi
+if [ ! -f $pdbfile ] ; then
+  echo ""
+  echo "$pdbfile not found."
+  echo ""
+  exit
+fi
+
+# awk does the real work
+awk 'BEGIN {
+
+  # Valid residue names for a water
+  wat_names = "HOH WAT H2O D2O DOD"
+
+  # Capture some variables from the shell, and set up output filenames
+  consfile="'$consfile'"
+  envfile="'$envfile'"
+  pdbcode="'$pdb'"
+  coutfile=pdbcode".predcons"
+  doutfile=pdbcode".preddisp"
+
+  # Use the env file to get the residue number of all 1st-shell
+  # waters (i.e. those with ADN > 0)
+  # FORMAT ASSUMPTION:  ADN-value is column 3 of envfile
+  env_wats_found = 0;
+  while (getline < envfile > 0)
+    if (($0 !~ /^#/) && ($3 > 0))
+      ID[env_wats_found++] = $2
+      
+  # Load the prediction for each of these waters from the .pred
+  # file (bbknn output).
+  # ASSUMPTIONS:  
+  #   1) There is one "Pattern ###" line for each first-shell water 
+  #      found in the envfile, and
+  #   2) The predicted class (1=disp, 2=cons) is found in column 5 of
+  #      the .pred file.
+  consolv_wats_found = 0;
+  while (getline < consfile > 0)
+    if ($0 ~ /^Pattern[ \t]*[0-9]+/)
+      pred[ID[consolv_wats_found++]] = $5
+
+  # Check for errors
+  if (consolv_wats_found != env_wats_found) {
+   print "Number of 1st-shell waters in " consfile " differs from " envfile "."
+   print consfile ":  " consolv_wats_found ", " envfile ":  " env_wats_found
+   exit
+  }
+  else {
+   wats_found = env_wats_found
+  }
+}
+
+# Now process the PDB file and extract the appropriate waters
+# to the two output files, depending on their predictions
+$1 == "ATOM" || $1 == "HETATM" {
+  res = substr($0, 18, 3)
+  rnum = substr($0, 24, 3) * 1
+  if (index(wat_names, res))
+    if (pred[rnum] == 1)
+       print $0 > doutfile
+    else if (pred[rnum] == 2)
+       print $0 > coutfile
+}' $pdbfile
+exit

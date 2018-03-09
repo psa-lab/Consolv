@@ -1,0 +1,75 @@
+#!/bin/csh
+#
+# allwats - Extract all water HETATM records from a pdb file
+#           and place them in the output file file
+#
+# To Use:
+#  1) Change the line that sets the pdbdir variable to point to your pdb files
+#  2) Change the line which builds the pdb filename to reflect your particular
+#     naming convention.  The current one is 3apr -> pdb3apr.ent
+#  3) If you want a different output file name, change that line too.
+#  4) Make sure awk & wc are in your path!
+#  5) Run the allwats script:  allwats <pdb_code>
+##############################################################################
+
+# Check for correct usage...
+if ( ${#argv} != 2 ) then
+	echo "Usage:  allwats infile outfile"
+	exit
+
+else
+
+# Now changed by Vishal Thakkar
+
+# *** Vishal's comments
+
+# If the file name already has an extension, just use it...
+
+# *** find for a period in the filename. If it exists then, extension is 
+# *** present. Hence use test -n to check whether that file is present or no...
+  set extension=`echo ${1} | grep "\."`
+  test -n "$extension"
+  if ($status == 0) then
+	set pdbfile=${1}
+  else
+
+#    ...else, build the name of the pdb file according to our conventions
+# *** Else use the the file name provided and attach the .xfm extension
+#        set pdbfile=${pdbdir}/pdb${1}.xfm
+         echo "Cannot open file :${1}"
+	 exit(-1)
+  endif
+
+# Build the output file name
+  set outfile=${2}
+
+# Make sure the pdb file exists
+  if ( ! -e $pdbfile ) then
+	echo ""
+	echo "allwats: Can't find PDB file - ${pdbfile}"
+	echo ""
+	exit
+  endif
+ 
+# Dump every HETATM record that refers to a water...
+  awk 'BEGIN {names[1]="HOH" \
+	      names[2]="WAT" \
+	      names[3]="H2O" \
+	      names[4]="DOD" \
+	      names[5]="D2O"}\
+       $1 == "HETATM" {for (i in names)\
+		if (names[i] == $4) print}' ${pdbfile} >! ${outfile}
+
+# Report how many were extracted
+  set numfound = `wc -l ${outfile} | awk '{print $1}'`
+  echo ""
+  echo "Created file ${outfile}"
+  echo "${numfound} waters were extracted"
+  echo ""
+
+  endif
+exit
+
+
+
+

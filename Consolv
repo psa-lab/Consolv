@@ -1,0 +1,109 @@
+#!/bin/sh 
+# syntax: scriptname proteinPDBCode complexPDBCode proteinPDBFile complexPDBFile proteinChain ligandChain
+# Mode: 
+#  application
+#     requires just these paramaters: proteinPDBCode,proteinPDBFile (total 2 parameters)
+#  test
+#     requires proteinPDBCode, complexPDBCode, proteinPDBFIle, complexPDBFile, proteinChainID,ligandChainID
+#     (total 6 parameters)
+#  env
+#     requires proteinPDBCode, proteinPDBFile  "noscale" (3 parameters)
+
+progname=$0
+prefix=`dirname \`which $0 \``
+weightfile=$prefix/lib/weight.dat
+trainfile=$prefix/lib/train.dat
+kvalfile=$prefix/lib/kval.dat
+
+# Check for active-site mode
+if [ "$1" = "-a" ] ; then
+  echo "Tuned for classification of active-site water."
+  trainfile=$prefix/lib/train_act.dat
+  weightfile=$prefix/lib/weight_act.dat
+  kvalfile=$prefix/lib/kval_act.dat
+  shift
+fi
+
+case $# in
+2) echo "Running in application mode..."
+   pPDB=`echo $1|tr "A-Z" "a-z"`
+   pFile=$2
+   watsFile="`basename $pFile`.hits"
+   envFile="$pPDB.env"
+   sclFile="$pPDB.scl"
+   $prefix/bin/allwats $pFile $watsFile
+   $prefix/bin/All.EXE -a $pFile $watsFile $pPDB
+   # remove non-firstshell waters
+      awk '$3!=0{print}' $envFile > tmp.$$
+      $prefix/bin/Scale.EXE -a tmp.$$ $sclFile
+      /bin/rm tmp.$$
+   # capture the k-value
+      if [ ! -r $kvalfile ] ; then
+	echo "Unable to find default k-value.  Not performing predictions."
+        exit
+      fi
+      kval=`cat $kvalfile`
+
+  # Do the predictions
+  echo "Performing predictions on ${pPDB}..."
+  $prefix/bin/bbknn -v $kval $trainfile $sclFile n $weightfile > ${pPDB}.pred
+
+   echo "Done.";;
+
+3) echo "Running in enviro mode..."
+   pPDB=`echo $1|tr "A-Z" "a-z"`
+   pFile=$2
+   watsFile="`basename $pFile`.hits"
+   if [ $3 -eq "noscale" ]; then
+     $prefix/bin/allwats $pFile $watsFile
+     $prefix/bin/All.EXE -a $pFile $watsFile $pPDB
+     echo "Done."
+   fi
+   echo "Done";; 
+
+6) echo "Running in test mode..."
+   pPDB=`echo $1|tr "A-Z" "a-z"`
+   cPDB=`echo $2|tr "A-Z" "a-z"`
+   pFile=$3
+   cFile=$4
+   pChain=$5
+   iChain=$6
+   watsFile="`basename $pFile`.hits"
+   envFile="$pPDB.env"
+   sclFile="$pPDB.scl"
+   $prefix/bin/Nearby.EXE $cFile $pFile $pChain $iChain $cPDB $pPDB
+   $prefix/bin/Conswat.EXE $pFile $cFile $pPDB
+   $prefix/bin/allwats $pFile $watsFile
+   $prefix/bin/All.EXE -t $pFile $watsFile $pPDB
+   #remove non-firstshell waters
+     awk '$3!=0{print}' $envFile > tmp.$$
+     $prefix/bin/Scale.EXE -t tmp.$$ $sclFile
+     /bin/rm tmp.$$
+
+   # capture the k-value
+      if [ ! -r $kvalfile ] ; then
+	echo "Unable to find default k-value.  Not performing predictions."
+        exit
+      fi
+      kval=`cat $kvalfile`
+
+  # Do the predictions
+  echo "Performing predictions on ${pPDB}..."
+  $prefix/bin/bbknn -v $kval $trainfile $sclFile y $weightfile > ${pPDB}.pred
+
+   echo "Done.";;
+
+
+*) echo "Usage:"
+   echo "To run in test mode:"
+   echo " $0 [-a] protPDBCode cplxPDBCode protPDBFile cplxPDBFile  pChainID ligChainID"
+   echo " "
+   echo "To run in application mode:"
+   echo " $0 [-a] protPDBCode protPDBFile"
+   echo " "
+   echo "To run in environment mode:"
+   echo " $0 [-a] protPDBCode protPDBFile noscale"
+   echo " "
+   exit
+esac
+

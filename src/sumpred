@@ -1,0 +1,206 @@
+#!/bin/ksh -f
+#
+#  Summarize prediction results from Consolv
+#
+
+# Usage statement & error exit routine
+err_exit () {
+  echo ""
+  if [ "x$1" != "x" ] ; then
+    echo $1
+    echo ""
+  fi
+  echo "Usage:  `basename $0` [-a] [-v] <pdb>"
+  echo "  where <pdb>.pred, <pdb>.cons, <pdb>.env, & <pdb>.active.hits"
+  echo "  are all in the current directory."
+  echo ""
+  exit;
+}
+
+# Parse command line arguments
+actmode=0
+verbmode=1		# 2008:07 SN	Make output to screen as default!
+testmode=0
+lastarg=1
+numargs=$#
+pdb="XnopdbfileX"
+while [ $lastarg -le $numargs ] ; do
+  case $1 in "-a")
+      actmode=1;;
+    "-v")
+      verbmode=1;;
+    *)
+      if [ "$pdb" = "XnopdbfileX" ] ; then
+        pdb=$1
+      else
+        err_exit
+      fi;;
+  esac
+  lastarg=$(($lastarg + 1))
+  shift
+done
+
+if [ "$pdb" = "XnopdbfileX" ] ; then
+  err_exit "No PDB code specified."
+fi
+
+# Filenames
+predf=${pdb}.pred
+consf=${pdb}.cons
+actf=${pdb}.active.hits
+envf=${pdb}.env
+
+# Check files
+if [ ! -f $predf ] ; then
+  err_exit "File not found: $predf"
+elif [ ! -f $envf ] ; then
+  err_exit "File not found: $envf"
+fi
+
+if [ -f $consf ] ; then
+  testmode=1
+fi
+
+# Only check for .act file if we are in test mode
+if [ testmode -eq 1 ] ; then
+  if [ ! -f $actf ] ; then
+    err_exit "File not found: $actf"
+  fi
+fi
+
+awk '
+BEGIN {
+  # Capture shell variables
+  pdbcode = "'$pdb'"
+  predf = "'$predf'"
+  consf = "'$consf'"
+  actf = "'$actf'"  
+  envf = "'$envf'"
+  actmode = '$actmode'
+  verbmode = '$verbmode'
+  testmode = '$testmode'
+
+  # Initializations
+  numfs = 0   # Number of first-shell waters found
+  pdad = 0
+  pdac = 0
+  pcac = 0
+  pcad = 0
+
+  # Load actsite PDB codes if necessary (actsite LIST)
+  if (actmode) {
+    while (getline < actf > 0) {
+       rnum = substr($0, 24, 3) * 1
+       actlist[rnum] = 1
+    }
+  }
+
+  #  Load list of conserved waters from .cons file if in test mode
+  if (testmode) {
+    while (getline < consf > 0) {
+      if ($0 !~ /^#/ && $3 == 1)
+	conswats[$2] = 1
+    }
+  }
+  
+  #  Load predicted values from .pred file (predicted ARRAY)
+  numpred = 0
+  votesmode = 0
+  if (testmode) votecol = 8
+    else votecol = 6
+  while (getline < predf > 0) {
+    if ($0 ~ /^Pattern[ \t]*[0-9]+ --/) {
+        prediction[numpred] = $(votecol - 1)
+      if ($votecol == "votes:" || votesmode == 1) {
+        votesmode = 1
+        votesd[numpred] = $(votecol + 1)
+        votesc[numpred] = $(votecol + 2)
+      }
+      numpred++
+    }
+  }
+
+  # Print the header
+  if (verbmode) {
+    printf("PDB\tRes#")
+    if (testmode) printf("\tObs")
+    printf("\tPred")
+    if (votesmode) printf("\tV(disp)\tV(cons)")
+    printf("\n")
+  }
+
+}  # BEGIN
+
+# Now process the .env file.  For each first-shell water found,
+# dump the corresponding conservation and prediction information.
+# If we are in active-site  mode, only dump active-site waters.
+
+# For all non-comment lines...
+$0 !~ /^#/ {
+  # If ADN > 0         (ADN is $3, ADN > 0 --> first-shell)
+  if ($3 > 0) {
+    resnum = $2
+    if (!actmode || resnum in actlist) {
+      if (resnum in conswats) obs = "Cons" 
+        else obs = "Disp"
+      if (prediction[numfs] == 1) pred = "Disp"
+        else if (prediction[numfs] == 2) pred = "Cons"
+        else pred = "N/A"
+      if (verbmode) {
+        printf("%s\t%d", pdbcode, resnum)
+        if (testmode) printf("\t%s", obs)
+        printf("\t%s", pred)
+        if (votesmode) printf("\t%d\t%d", votesd[numfs], votesc[numfs])
+        printf("\n")
+      }
+
+      # Keep track of summary information as we go
+      if (pred == "Disp")
+        if (obs == "Disp")
+	  pdad++
+        else
+          pdac++
+      else if (pred == "Cons")
+        if (obs == "Disp")
+          pcad++
+        else
+          pcac++
+    }
+    numfs++
+  }
+}
+
+END {
+
+# Print summary information
+if (testmode) {
+  ac = pcac + pdac
+  ad = pdad + pcad
+  print ""
+  printf("\t  Observed\n")
+  printf("Pred  |  ")
+  printf("Disp\tCons\n")
+  printf("------+----------------\n")
+  printf ("Disp  |   %3d\t %3d\n", pdad, pdac)
+  printf ("Cons  |   %3d\t %3d\n", pcad, pcac)
+  printf("-----------------------\n\n")
+
+  printf("Accuracy\n--------\n")
+  printf("Cons:\t%6.2f\%\n", (pcac*1.0)/(ac*1.0)*100.0)
+  printf("Disp:\t%6.2f\%\n", (pdad*1.0)/(ad*1.0)*100.0)
+  printf("Total:\t%6.2f\%\n", (pcac + pdad * 1.0)/(ac + ad * 1.0) * 100.0)
+  print ""
+}
+
+# Check that the number of first shell waters found matched the number
+# of predictions made.
+  if (numfs != numpred) {
+    printf("ERROR:  Number of first shell waters found in %s does not\n",
+           envf)
+    printf("match the number of predictions found in %s.\n", predf)
+    printf("First shell waters:  %d\n", numfs)
+    printf("Predictions:  %d\n", numpred)
+  }
+}' $envf
+
+exit

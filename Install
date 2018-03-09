@@ -1,0 +1,122 @@
+#!/bin/sh
+#
+# This script will prompt for a few default file locations, and
+# then call 'make' with the appropriate symbol definitions on the
+# command line.  The makefile for Consolv will fail if the symbols
+# PDBDEFLOC and AHPLIST are not defined, so this script should be
+# used rather than calling make from the shell.
+#
+
+# If we did not run Install from the same directory it lives
+# in (e.g. ./Install), then cd to that directory
+instdir=`dirname \`which $0 \``
+cd $instdir
+ConsolvDir=`pwd`
+
+# Initialize some variables
+DefaultAHP="$ConsolvDir/lib/ahplist.dat"
+PDB=""
+AHP=""
+if [ -f "pdb_path" ] ; then 
+  DefaultPDB=`cat pdb_path`
+else
+  DefaultPDB="no"
+fi
+
+# Ask for the PDB location
+while [ -z "$PDB" ] ; do
+  echo ""
+  echo "Please enter the full path for the default PDB file location or type RETURN to use the default path."
+  echo "PDB path [default $DefaultPDB]: \c"
+  read RESP 
+
+  # If the user just hits return, then substitute the default location; otherwise, save the input path
+  if [ -z "$RESP" ] ; then
+    PDB=$DefaultPDB
+  else
+    PDB=$RESP
+    echo $RESP > pdb_path 
+  fi
+
+  # Check if the directory really exists
+  if [ ! -z "$PDB" ] ; then
+
+    # If not, then make sure the name was entered correctly
+    if [ ! -d $PDB ] ; then
+      echo ""
+      echo "Directory $PDB not found.  Use this directory anyway?"
+      RESP=""
+      while [ -z "$RESP" ] ; do
+	echo "Please enter Y or N: \c"
+	read RESP
+	RESP=`echo $RESP | tr "yn" "YN"`
+	if [ ! "$RESP" = "Y" ] ; then
+	  if [ ! "$RESP" = "N" ] ; then
+	    RESP=""
+	  fi
+	fi
+      done
+
+      # If the name was not entered correctly, blank it so that
+      # we return to the top of this while loop & re-prompt
+      if [ "$RESP" = "N" ] ; then
+	PDB=""
+      fi
+    fi
+  fi
+done
+
+# Get the ahplist.dat file location
+RESP=""
+echo ""
+echo "Please enter the full path to the ahplist.dat file."
+echo "If you have not moved this file from its default location, just hit RETURN."
+
+while [ ! -f "$AHP" ] ; do
+  echo "Path [$DefaultAHP]: \c"
+  read RESP
+
+  # If the user just hits return, then substitute the default location
+  if [ -z "$RESP" ] ; then
+    AHP=$DefaultAHP
+  else
+    AHP=$RESP
+  fi
+
+  # If the file is not found, complain before re-prompting
+  if [ ! -f $AHP ] ; then
+    echo "File not found:  $AHP"
+  fi
+done
+
+# One last verify, then cd to the src directory and call make
+echo ""
+echo "About to install Consolv using the following options:"
+echo "PDB Files:  $PDB"
+echo "AHPLIST:    $AHP"
+echo ""
+echo "Proceed? (Y or N) \c"
+RESP=""
+read RESP
+RESP=`echo $RESP | tr "yn" "YN"`
+while [ "$RESP" != "Y" -a "$RESP" != "N" ] ; do
+  echo "Please enter Y or N.  Proceed with install? \c"
+  read RESP
+  RESP=`echo $RESP | tr "yn" "YN"`
+done
+
+# When calling make, set the appropriate symbols on the command line
+echo ""
+if [ "$RESP" = "Y" ] ; then
+  echo "Installing..."
+  cd src
+  make install PDBDEFLOC="$PDB" AHPLIST="$AHP"
+  make clean
+  cd ..
+  echo "Done."
+else
+  echo "Installation cancelled."
+fi  
+
+echo ""
+exit

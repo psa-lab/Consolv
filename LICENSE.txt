@@ -1,0 +1,41 @@
+This license agreement covers your use of software developed in the
+Protein Structural Analysis and Design Laboratory by Michael Raymer,
+Paul Sanschagrin, and Leslie Kuhn, Department of Biochemistry, Michigan
+State University, East Lansing, Michigan 48824-1319 ((517) 353-8745;
+kuhn@agua.bch.msu.edu). The material concerned, which belongs to MSU,
+is Consolv version 1.0 ("Software").
+
+We will be pleased to permit use of the Software within your laboratory
+for scientific research.  However, please note that the license to use
+the software is granted only upon the condition that you accept the
+following terms:
+
+(i) that the Software received by you will be used only for scientific
+research; (ii) that the Software is being supplied to you on an
+"as is" basis with no warranties, expressed or implied,
+including any warranty of fitness for a particular purpose; (iii) that
+you will not sell or otherwise transfer the Software or derivative
+works based on the Software to any other party, whether with or
+without consideration, for any purpose or use; (iv) that you will not
+obtain, and will not attempt to obtain, copyright coverage thereon
+without our express written consent; (v) that you will hold us
+harmless from any and all expenses you may incur as a result of or
+arising from your use, direct or indirect, of these materials; and (vi)
+that you will inform us of any changes that you make and allow us to
+incorporate them into the original for our use and use by other
+investigators who have signed this license agreement; (vii) you may
+incorporate code from this Software into your own programs as long as
+the source of this Software is attributed in your code, and as long as
+the majority of the program code is written by you. No other right or
+license to this Software or its derivatives is granted or implied as a
+result of our transmission of same to you.
+
+In addition, we ask that you acknowledge use of the Software that
+results in any published work, including scientific papers, films, and
+videotapes, by referencing it as:
+
+"M. L. Raymer, P. C. Sanschagrin, W. F. Punch, S. Venkataraman, E. D.
+Goodman, and L. A. Kuhn. Predicting conserved water-mediated and polar
+ligand interactions in proteins using a k-nearest-neighbor genetic
+algorithm.  J. Mol. Biol., 265:445-464, 1997."
+

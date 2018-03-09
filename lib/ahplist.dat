@@ -1,0 +1,445 @@
+# AHP values file for use by ahphil.c
+# Format:
+# Atom  Residue         Value
+#------------------------------------
+
+#######################################################################
+#  COMMON PROTEIN ATOMS:                                              #
+#---------------------------------------------------------------------#
+#  Entered by M. Raymer using information from:                       #
+#  L.A. Kuhn, C.A. Swanson, M.E. Pique, J.A. Tainer, E.D. Getzoff,    #
+#  "Atomic and Residue Hydrophilicity in the Context of Folded        #
+#   Protein Structures," Prot: Struct. Funct. Genet. 23:536-547, 1995 #
+#######################################################################
+
+#  Neutral Nitrogen: 0.351
+N       *       0.351
+NE      ARG     0.351
+NE1     TRP     0.351
+ND2     ASN     0.351
+NE2     GLN     0.351
+# added by Vishal
+N1      U18     0.35
+#
+
+# Positively charged nitrogen: 0.444
+ND1     HIS     0.444
+NE2     HIS     0.444
+NH1     ARG     0.444
+NH2     ARG     0.444
+NZ      LYS     0.444
+
+# Calcium and Manganese, for now, are considered similar
+# to Positively charged nitrogen...                     
+CA      CA      0.444
+MN      MN      0.444
+
+# Carbon and Sulfur: 0.078
+C       *       0.078
+CA      *       0.078
+CB      *       0.078
+CG      *       0.078
+CD      *       0.078
+CG1     VAL     0.078
+CG2     VAL     0.078
+CD1     LEU     0.078
+CD2     LEU     0.078
+CG2     THR     0.078
+CE      MET     0.078
+CG2     ILE     0.078
+CG1     ILE     0.078
+CD1     ILE     0.078
+CE      LYS     0.078
+CD1     PHE     0.078
+CD2     PHE     0.078
+CE1     PHE     0.078
+CE2     PHE     0.078
+CZ      PHE     0.078
+CD1     TYR     0.078
+CD2     TYR     0.078
+CE1     TYR     0.078
+CE2     TYR     0.078
+CD1     TRP     0.078
+CD2     HIS     0.078
+CE1     HIS     0.078
+CE3     TRP     0.078
+CZ2     TRP     0.078
+CZ3     TRP     0.078
+CH2     TRP     0.078
+CZ      TYR     0.078
+CD2     TRP     0.078
+CE2     TRP     0.078
+CZ      ARG     0.078
+#added by Vishal
+C1      BME     0.080
+C1      CBX     0.080
+C2      U18     0.080
+C7      U18     0.080
+CA2     U18     0.080
+P       UMP     0.080
+
+#
+SG      CYS     0.078
+SD      MET     0.078
+S       SO4     0.078
+
+# Neutral Oxygen: 0.528
+O       *       0.528
+#added by Vishal
+O4      UMP     0.528
+O1      BME     0.528
+#
+OH2     *       0.528
+OE1     GLN     0.528
+OD1     ASN     0.528
+OG      SER     0.528
+OG1     THR     0.528
+OH      TYR     0.528
+
+# Negatively charged oxygen: 0.511
+OXT     *       0.511
+OT1	*	0.511
+OT2	*	0.511
+OD1     ASP     0.511
+OD2     ASP     0.511
+OE1     GLU     0.511
+OE2     GLU     0.511
+O1      SO4     0.511
+O2      SO4     0.511
+O3      SO4     0.511
+O4      SO4     0.511
+# Added by Vishal
+O1P     UMP     0.511
+O3P     UMP     0.511
+OD1     CYA     0.511
+OD2     CYA     0.511
+O1	PO4	0.511
+O2	PO4	0.511
+O3	PO4	0.511
+O4	PO4	0.511
+O1	PHO	0.511
+O2	PHO	0.511
+O3	PHO	0.511
+O4	PHO	0.511
+#
+
+###############################################################
+#  ATOMS FROM OTHER MISC BOUND MOLECULES                      #
+#-------------------------------------------------------------#
+# Please include the name of the person who determined        #
+# the charges/atom groupings, and the date of all additions!  #
+###############################################################
+
+#-------------------------------#
+# HEME atoms                    #
+# Added by M. Raymer - 11/10/97 #
+#-------------------------------#
+
+# Iron atom kludge:  Iron will be treated as a charged nitrogen.
+#                    Although this is a kludge, it is the most
+#                    positively charged group we have data for.
+#                    Per: L. Kuhn, 11/10/97
+# (Positively charged nitrogen: 0.444)
+FE	HEM	0.444
+
+# HEME negative oxygens (often ligated by protein atoms)
+# (Negatively charged oxygen: 0.511)
+O1D	HEM	0.511
+O2D	HEM	0.511
+O1A	HEM	0.511
+O2A	HEM	0.511
+
+# HEME neutral nitrogens -- (Carbon and Sulfur: 0.078)
+NA	HEM	0.351
+NB	HEM	0.351
+NC	HEM	0.351
+ND	HEM	0.351
+
+# HEME carbons -- (Carbon and Sulfur: 0.078)
+C1A	HEM	0.078
+CHA	HEM	0.078
+C4D	HEM	0.078
+C1B	HEM	0.078
+CHB	HEM	0.078
+C4A	HEM	0.078
+C1C	HEM	0.078
+CHC	HEM	0.078
+C4B	HEM	0.078
+C1D	HEM	0.078
+CHD	HEM	0.078
+C4C	HEM	0.078
+C2A	HEM	0.078
+CAA	HEM	0.078
+C3A	HEM	0.078
+CMA	HEM	0.078
+CBA	HEM	0.078
+CGA	HEM	0.078
+C2B	HEM	0.078
+CMB	HEM	0.078
+C3B	HEM	0.078
+CAB	HEM	0.078
+CBB	HEM	0.078
+C2C	HEM	0.078
+CMC	HEM	0.078
+C3C	HEM	0.078
+CAC	HEM	0.078
+CBC	HEM	0.078
+C2D	HEM	0.078
+CMD	HEM	0.078
+C3D	HEM	0.078
+CAD	HEM	0.078
+CBD	HEM	0.078
+CGD	HEM	0.078
+
+#-------------------------------#
+# TAP (from 1dr2):              #
+# Supplied by L. Kuhn,          #
+# Added by M. Raymer - 2/8/96   #
+#-------------------------------#
+
+#----------------------------------------------------------------#
+# These names were found when the free structures was transformed#
+# to match the same coordinate space as that of the complex.     #
+# The entries with different names were added by Vishal Thakkar  #
+# Date Jan 8, 1997.                                              #
+#----------------------------------------------------------------#
+
+# TAP - Neutral Oxygens
+AO5*    TAP     0.528
+AO4*    TAP     0.528
+AO3*    TAP     0.528
+AO2*    TAP     0.528
+O3      TAP     0.528
+NO4*    TAP     0.528
+NO3*    TAP     0.528
+NO2*    TAP     0.528
+# TAP - Neutral Oxygens with different names
+# The entries below have one to one correspondence with entries above
+1O5'    TAP     0.528
+2O4'    TAP     0.528
+2O3'    TAP     0.528
+2O2'    TAP     0.528
+O       TAP     0.528
+2O4'    TAP     0.528
+203'    TAP     0.528
+202'    TAP     0.528
+#-----------------
+
+# TAP - Negative Oxygens
+AO1     TAP     0.511
+AO2     TAP     0.511
+NO1     TAP     0.511
+NO2     TAP     0.511
+O1A     TAP     0.511
+O2A     TAP     0.511
+O3A     TAP     0.511
+# TAP - Negative Oxygens with different names
+# The entries below have one to one correspondence with entries above
+1O1A    TAP     0.511
+1O2A    TAP     0.511
+1O1N    TAP     0.511
+1O2N    TAP     0.511
+# ------------------
+
+# TAP - Neutral Nitrogens
+AN9     TAP     0.351
+AN7     TAP     0.351
+AN6     TAP     0.351
+AN3     TAP     0.351
+AN1     TAP     0.351
+NO5*    TAP     0.351
+NN7     TAP     0.351
+# TAP - Neutral Nitrogens with different names
+# The entries below have one to one correspondence with entries above
+N9A     TAP     0.351
+N7A     TAP     0.351
+2N6A    TAP     0.351
+1N3A    TAP     0.351
+2N1A    TAP     0.351
+1O5'    TAP     0.351
+3N7N    TAP     0.351
+#-------------------
+
+# TAP - Positively Charged Nitrogens
+NN1     TAP     0.444
+# TAP - Positively Charged Nitrogens with different names
+# The entries below have one to one correspondence with entries above
+2N1N    TAP     0.444
+#-------------------
+
+# TAP - Phosphorous --> N Group
+P	 *	0.351
+AP      TAP     0.351
+NP      TAP     0.351
+AP2     TAP     0.351
+# TAP - Phosphorous --> N Group with different names
+# The entries below have one to one correspondence with entries above
+P        *      0.351
+PA      TAP     0.351
+PN      TAP     0.351
+3P2A    TAP     0.351
+#--------------------
+
+# TAP - Carbons
+AC5*    TAP     0.078
+AC4*    TAP     0.078
+AC3*    TAP     0.078
+AC2*    TAP     0.078
+AC1*    TAP     0.078
+AC8     TAP     0.078
+AC6     TAP     0.078
+AC5     TAP     0.078
+AC4     TAP     0.078
+AC2     TAP     0.078
+NC5*    TAP     0.078
+NC4*    TAP     0.078
+NC3*    TAP     0.078
+NC2*    TAP     0.078
+NC1*    TAP     0.078
+NC7     TAP     0.078
+NC6     TAP     0.078
+NC5     TAP     0.078
+NC4     TAP     0.078
+NC3     TAP     0.078
+NC2     TAP     0.078
+# TAP - Carbons with different names
+# The entries below have one to one correspondence with entries above
+2C5'    TAP     0.078
+1C4'    TAP     0.078
+1C3'    TAP     0.078
+1C2'    TAP     0.078
+C1'     TAP     0.078
+C8A     TAP     0.078
+1C6A    TAP     0.078
+C5A     TAP     0.078
+C4A     TAP     0.078
+1C2A    TAP     0.078
+2C5'    TAP     0.078
+1C4'    TAP     0.078
+1C3'    TAP     0.078
+1C2'    TAP     0.078
+C1'     TAP     0.078
+1C7N    TAP     0.078
+C6N     TAP     0.078
+C5N     TAP     0.078
+C4N     TAP     0.078
+C3N     TAP     0.078
+2C2N    TAP     0.078
+#-------------------
+
+# TAP - Sulfur
+NS7     TAP     0.078
+# TAP - Sulfur
+# The entries below have one to one correspondence with entries above
+2S7N    TAP     0.078
+#-------------------
+
+#-----------#
+# END - TAP #
+#-----------#
+
+# Metals: added by Vishal
+CO      CO      0.528
+ZN      ZN      0.528
+NA      NA      0.528
+
+# Default value of C,O,N,S,P
+# Default residue name is AVG
+C	AVG	0.078
+O	AVG	0.5195
+N	AVG	0.3975
+S	AVG	0.078
+P	AVG	0.3975
+
+# Default values for Halides (same as -ve Oxygen)
+# Added by Vishal, Apr 7, '97
+F       AVG    0.511
+CL      AVG    0.511
+BR      AVG    0.511
+I       AVG    0.511
+
+#------------------------------------------#
+# MPD Atoms - determined by Leslie Kuhn    #
+#             Added by M. Raymer 3/16/98   #
+#   All atoms are uncharged (neutral)      #
+#------------------------------------------#
+C1	MPD	0.078
+C2	MPD	0.078
+C3	MPD	0.078
+C4	MPD	0.078
+O2	MPD	0.528
+O4	MPD	0.528
+# END MPD
+
+#------------------------------------------------#
+# NAP (NADP+) atoms - determined by Leslie Kuhn  #
+#                     Added by M. Raymer 3/98    #
+#  The atom names here follow the MSI/InsightII  #
+#  naming conventions.  The file pdb2acq.ent     #
+#  was read by InsightII, and written in PDB     #
+#  format, producing the following  HETATM       #
+#  records.                                      #
+#                                                #
+#  All atoms are neutral except for phosphate-   #
+#  associated oxygens O1N, O2N, O1A, O2A, OP1,   #
+#  OP2, and OP3.                                 #
+#------------------------------------------------#
+C1'     NAP	0.078
+C1'     NAP	0.078
+C2'     NAP	0.078
+C2'     NAP	0.078
+C2A     NAP	0.078
+C2N     NAP	0.078
+C3'     NAP	0.078
+C3'     NAP	0.078
+C3N     NAP	0.078
+C4'     NAP	0.078
+C4'     NAP	0.078
+C4A     NAP	0.078
+C4N     NAP	0.078
+C5'     NAP	0.078
+C5'     NAP	0.078
+C5A     NAP	0.078
+C5N     NAP	0.078
+C6A     NAP	0.078
+C6N     NAP	0.078
+C7N     NAP	0.078
+C8A     NAP	0.078
+N1A     NAP	0.351
+N1N     NAP	0.351
+N3A     NAP	0.351
+N6A     NAP	0.351
+N7A     NAP	0.351
+N7N     NAP	0.351
+N9A     NAP	0.351
+PA      NAP	0.351
+P2'     NAP	0.351
+PN      NAP	0.351 
+O1A     NAP	0.511
+O1N     NAP	0.511
+O2A     NAP	0.511
+O2N     NAP	0.511
+OP1     NAP	0.511
+OP2     NAP	0.511
+OP3     NAP	0.511
+O2'     NAP	0.528
+O2'     NAP	0.528
+O3      NAP	0.528
+O3'     NAP	0.528
+O3'     NAP	0.528
+O4'     NAP	0.528
+O4'     NAP	0.528
+O5'     NAP	0.528
+O5'     NAP	0.528
+O7N     NAP	0.528
+# END NAP
+
+#-----------------------#
+# CO3 - Carbonate Ion   #
+#  Added by M. Raymer   #
+#  3/98                 #
+#-----------------------#
+C	CO3	0.078
+O1	CO3	0.511
+O2	CO3	0.511
+O3	CO3	0.511

@@ -1,0 +1,97 @@
+#!/bin/csh -f
+# A C-Shell script to extract a combination of features from a .env
+# file.
+# Vishal Thakkar
+#check the number of arguements
+if($#argv<2) then
+   echo "Usage: extract feature-list input_file"
+   echo  "where feature-list is a combination of:"
+   echo  "adn, ahp, bval, hbdp, hbdw, mob, nbval, abval, cons, as"
+   echo  " "
+   echo  " adn = Atomic Density          ahp = Atomic Hydrophilicity"
+   echo  "bval = BValue	                hbdp = # of Hbonds to protein atoms"
+   echo  "hbdw = # of Hbonds to water    mob = Mobility"
+   echo  "nbval= net BVal              abval = Avg Bval"
+   echo  "cons = Conserved                as = ActiveSite"
+   exit -1
+endif
+# format string is s
+set s='$1,"  "$2,"   "'
+#process each command line argument
+echo " "
+echo "Assumption: The env file has the following format"
+echo "PDBCode Residue# ADN AHP BVal HBD_P HBD_W Mob NetBVal AvgBVal Conserved ActiveSite"
+echo " "
+sleep 1
+echo -n "Extracting "
+foreach feature ($*)
+ switch ($feature) 
+   case 'adn':
+	 echo -n 'ADN '
+	 set s=`echo $s`', $3"   "'
+	 breaksw
+   case 'ahp':
+	 echo -n 'AHP '
+   	 set s=`echo $s`', $4"   "'
+	 breaksw
+   case 'bval':
+	 echo -n 'Bval '
+	 set s=`echo $s`', $5"   "'
+	 breaksw
+   case 'hbdp':
+	 echo -n 'HBD_P '
+	 set s=`echo $s`', $6"   "'
+	 breaksw
+   case 'hbdw':
+	 echo -n 'HBD_W '
+         set s=`echo $s`', $7"   "'
+	 breaksw
+   case 'mob':
+	 echo -n 'Mob '
+	 set s=`echo $s`', $8"   "'
+	 breaksw
+  case 'nbval':
+	 echo -n 'NetBVal '
+	 set s=`echo $s`', $9"   "'
+	 breaksw
+  case 'abval':
+	 echo -n 'AvgBVal '
+	 set s=`echo $s`', $10"   "'
+	 breaksw
+  case 'cons':
+	 echo -n 'Conserved '
+	 set s=`echo $s`', $11"   "'
+	 breaksw
+   case 'as':
+	 echo -n 'ActiveSite '
+         set s=`echo $s`', $12"   "'
+ 	 breaksw
+   default:
+	 set file=$feature 	 
+ endsw
+end 
+
+# the format string s is written to a temp program file.
+set prog='$0 !~ /^.*#/ { print '
+echo -n "${prog} ${s} " > temp.$$
+echo  ' }' >> temp.$$
+
+
+# check if the input file exits.
+if ( $?file) then
+   if (-e $file) then
+      echo '.'
+       echo "Processing ..."
+   endif
+  else
+      echo " "
+      echo "Input file is not readable\!"
+      echo "Exiting..."
+      rm temp.$$
+      exit -1
+ endif
+
+# Running the awk program
+awk -f temp.$$ $file
+# Remove the temp input file.
+rm temp.$$
